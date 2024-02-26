@@ -124,8 +124,8 @@ void dynarray_insert(struct dynarray* da, void* object) {
  * This function removes an element from an array at a specific index
  * This function shifts all proceeding elements back by one space
  * 
- * @param da - pointer to a dynamic array
- * @param index - integer from [0, n), where n is size of dynamic array
+ * @param da - pointer to a dynamic array (NOT NULL)
+ * @param index - integer from [0, n), where n is size of dynamic array (NOT NULL)
  */
 void dynarray_remove(struct dynarray* da, int index) {
     int size = da->size;
@@ -141,7 +141,7 @@ void dynarray_remove(struct dynarray* da, int index) {
  * This function frees the allocated space used for the dynamic array
  * It is the responsibility of the caller to free the values stored by the void* if any
  * 
- * @param da - pointer to a dynamic array
+ * @param da - pointer to a dynamic array (NOT NULL)
  */
 void dynarray_free(struct dynarray* da) {
     free(da);

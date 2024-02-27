@@ -14,11 +14,12 @@
 // Libraries
 #include <stdio.h>
 #include <stdlib.h>
+#include "dynarray.h"
 
 // Constants
-const INITIAL_SIZE = 0;     // All arrays will be empty on creation
-const INITIAL_CAPACITY = 2; // Maximum number of elements that can be stored in the array
-const RESIZE_FACTOR = 2;    // How many times capacity will increase by when array is filled
+const int INITIAL_SIZE = 0;     // All arrays will be empty on creation
+const int INITIAL_CAPACITY = 2; // Maximum number of elements that can be stored in the array
+const int RESIZE_FACTOR = 2;    // How many times capacity will increase by when array is filled
 
 /*
  * Dynamic array struct that consists of size, capacity, and data attributes
@@ -86,10 +87,35 @@ int dynarray_capacity(struct dynarray* da) {
 }
 
 /*
+ * This function resizes the total capacity the dynamic array has
+ * The capacity is multiplied by RESIZE_FACTOR
+ * More space is allocated and old data is copied over
+ * 
+ * @param da - pointer to a dynamic array (NOT NULL)
+ * @param object - void pointer to some data (NOT NULL)
+ */
+void dynarray_resize(struct dynarray* da) {
+    // Get array's size and capacity
+    int size = da->size;
+    int capacity = da->capacity;
+
+    // Allocate space to store more data
+    // Copy old elements into new array
+    void** newData = malloc(capacity * 2 * sizeof(void*));
+    for (int i = 0; i < size; i++) {
+        newData[i] = da->data[i];
+    }
+
+    // Update dynamic array object
+    free(da->data);
+    da->capacity *= 2;
+    da->data = newData;
+}
+
+/*
  * This function inserts a new object into the dynamic array
  * This function checks whether or not the array is full before insertion
- * If full, the function allocates new space and copies elements from old data into new data
- * Old data's allocated space is freed
+ * If full, dynarray_resize is called
  * 
  * @param da - pointer to a dynamic array (NOT NULL)
  * @param object - void pointer to some data (NOT NULL)
@@ -99,20 +125,10 @@ void dynarray_insert(struct dynarray* da, void* object) {
     int size = da->size;
     int capacity = da->capacity;
 
-    // Check if array is full
+    // Resize if full
     int isFull = (size == capacity);
     if (isFull) {
-        // Allocate space to store more data
-        // Copy old elements into new array
-        void** newData = malloc(capacity * 2 * sizeof(void*));
-        for (int i = 0; i < size; i++) {
-            newData[i] = da->data[i];
-        }
-
-        // Update dynamic array object
-        free(da->data);
-        da->capacity *= 2;
-        da->data = newData;
+        dynarray_resize(da);
     }
 
     // Insert object and increase size
